@@ -64,16 +64,14 @@ else
 	@cp ${MANIFEST_FILE} iso/config
 endif
 	@mkdir -p build
-	@DOCKER_BUILDKIT=1 docker build -f Dockerfile.iso \
-		--build-arg OS_IMAGE=${REPO}:${FINAL_TAG} \
-		--build-arg BUILDER_IMAGE=${BUILDER_IMAGE} \
-		--build-arg VERSION=${FINAL_TAG} \
-		--build-arg CLOUD_CONFIG_FILE=${CLOUD_CONFIG_FILE} \
-		--build-arg MANIFEST_FILE=${MANIFEST_FILE} \
-		-t iso:${FINAL_TAG} .
-	@DOCKER_BUILDKIT=1 docker run --rm -v $(PWD)/build:/mnt \
-		iso:${FINAL_TAG} \
-		cp elemental-iso/${ISO} /mnt
+	@docker run --entrypoint "" \
+				-it --rm \
+#				-v`pwd`/other-cloud-init-files/:/tmp/overlay/ \
+				-v`pwd`/${CLOUD_CONFIG_FILE}:/tmp/overlay/livecd-cloud-config.yaml \
+				-v`pwd`/${MANIFEST_FILE}:/tmp/manifest.yaml \
+				-v`pwd`/build:/tmp/build \
+				${REPO}:${FINAL_TAG} \
+				elemental --debug build-iso dir:/ -o /tmp/build -n "${ISO}" --overlay-iso /tmp/overlay --config-dir /tmp/builder-config
 	@echo "INFO: ISO available at build/${ISO}"
 
 # Build an iso with the OBS base containers
