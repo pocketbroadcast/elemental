@@ -66,7 +66,6 @@ endif
 	@mkdir -p build
 	@docker run --entrypoint "" \
 				-it --rm \
-#				-v`pwd`/other-cloud-init-files/:/tmp/overlay/ \
 				-v`pwd`/${CLOUD_CONFIG_FILE}:/tmp/overlay/livecd-cloud-config.yaml \
 				-v`pwd`/${MANIFEST_FILE}:/tmp/manifest.yaml \
 				-v`pwd`/build:/tmp/build \
